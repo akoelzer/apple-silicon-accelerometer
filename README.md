@@ -7,6 +7,8 @@
     pip install -e .
     sudo .venv/bin/python3 motion_live_mod.py
 
+you can change the time of what is shown in the rolling window, the amplitude plotting limit, and toggle adaptively changing the amplitude around line 35 in motion_live_mod.py
+
 # apple-silicon-accelerometer
 
 ## Built with this
