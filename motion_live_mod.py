@@ -34,6 +34,8 @@ from macimu._spu import (
 
 maxtime = 5 # time in seconds that is kept in buffer
 fs = 100 # sampling frequency (default: 100. doesn't work as I want it to yet)
+amplim = 0.02 # amplitude plotting limit
+adaptiveylim = False # automatically fit amplitude plotting limits to window
 
 RST = "\033[0m"
 BOLD = "\033[1m"
@@ -1006,9 +1008,9 @@ def main():
     line3, = ax3.plot([], [])
     ax3.set_xlim(-maxtime,0)
     ax3.set_xlabel("Time in seconds")
-    ax1.set_ylabel("X-Axis")
-    ax2.set_ylabel("Y-Axis")
-    ax3.set_ylabel("Z-Axis")
+    ax1.set_ylabel("X-Axis") # left-right (movement to left positive)
+    ax2.set_ylabel("Y-Axis") # front-back (movement to front positive)
+    ax3.set_ylabel("Z-Axis") # down-up (movement down positive)
 
     def update_new(frame):
         y = list(det.waveform)
@@ -1026,10 +1028,10 @@ def main():
             line1.set_data(x,xs)
             line2.set_data(x,ys)
             line3.set_data(x,zs)
-            ymax = np.max(np.nanmax(np.abs(xyz)))
-            #if ymax < 0.01:
-            #    ymax = 0.01
-            ymax = 0.02
+            if adaptiveylim == True:
+                ymax = np.max(np.nanmax(np.abs(xyz)))
+            else:
+                ymax = amplim
             ax1.set_ylim(-ymax,ymax)
             ax2.set_ylim(-ymax,ymax)
             ax3.set_ylim(-ymax,ymax)
