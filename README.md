@@ -1,3 +1,11 @@
+## original description below, here quickstart on running my new visualization script
+
+    git clone https://github.com/akoelzer/apple-silicon-accelerometer
+    cd apple-silicon-accelerometer
+    python3 -m venv .venv && source .venv/bin/activate
+    pip install -e .[demo]
+    sudo .venv/bin/python3 motion_live_mod.py
+
 # apple-silicon-accelerometer
 
 ## Built with this
