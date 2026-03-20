@@ -3,7 +3,8 @@
     git clone https://github.com/akoelzer/apple-silicon-accelerometer
     cd apple-silicon-accelerometer
     python3 -m venv .venv && source .venv/bin/activate
-    pip install -e .[demo]
+    pip install -r requirements.txt
+    pip install -e .
     sudo .venv/bin/python3 motion_live_mod.py
 
 # apple-silicon-accelerometer
