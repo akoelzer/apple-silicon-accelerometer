@@ -36,6 +36,7 @@ maxtime = 5 # time in seconds that is kept in buffer
 fs = 100 # sampling frequency (default: 100. doesn't work as I want it to yet)
 amplim = 0.02 # amplitude plotting limit
 adaptiveylim = False # automatically fit amplitude plotting limits to window
+threecomponents = False # plot all three components or just z-axis
 
 RST = "\033[0m"
 BOLD = "\033[1m"
@@ -1002,42 +1003,63 @@ def main():
         run_as_user=(not kbpulse_as_root),
     )
     kbflash.start()
-    fig,[ax1,ax2,ax3] = plt.subplots(3,figsize=(14, 7),sharex=True)
-    line1, = ax1.plot([], [])
-    line2, = ax2.plot([], [])
-    line3, = ax3.plot([], [])
-    ax3.set_xlim(-maxtime,0)
-    ax3.set_xlabel("Time in seconds")
-    ax1.set_ylabel("X-Axis") # left-right (movement to left positive)
-    ax2.set_ylabel("Y-Axis") # front-back (movement to front positive)
-    ax3.set_ylabel("Z-Axis") # down-up (movement down positive)
-
+    if threecomponents == True:
+        fig,[ax1,ax2,ax3] = plt.subplots(3,figsize=(14, 7),sharex=True)
+        line1, = ax1.plot([], [])
+        line2, = ax2.plot([], [])
+        line3, = ax3.plot([], [])
+        ax3.set_xlim(-maxtime,0)
+        ax3.set_xlabel("Time in seconds")
+        ax1.set_ylabel("X-Axis") # left-right (movement to left positive)
+        ax2.set_ylabel("Y-Axis") # front-back (movement to front positive)
+        ax3.set_ylabel("Z-Axis") # down-up (movement down positive)
+    else:
+        fig,ax1 = plt.subplots(1,figsize=(14, 7))
+        line1, = ax1.plot([], [])
+        ax1.set_xlim(-maxtime,0)
+        ax1.set_xlabel("Time in seconds")
+        ax1.set_ylabel("Z-Axis")
     def update_new(frame):
         y = list(det.waveform)
         x = np.arange(len(y))
         x = x/fs-maxtime
         #line.set_data(x,y)
         xyz = np.array(det.waveform_xyz)
-        try:
-            xs = xyz[:,0]
-            ys = xyz[:,1]
-            zs = xyz[:,2]
-            #print(len(zs))
-            x = np.arange(len(xs))
-            x = x/fs-maxtime
-            line1.set_data(x,xs)
-            line2.set_data(x,ys)
-            line3.set_data(x,zs)
-            if adaptiveylim == True:
-                ymax = np.max(np.nanmax(np.abs(xyz)))
-            else:
-                ymax = amplim
-            ax1.set_ylim(-ymax,ymax)
-            ax2.set_ylim(-ymax,ymax)
-            ax3.set_ylim(-ymax,ymax)
-        except:
-            pass
-        return line1,line2,line3
+        if threecomponents:
+            try:
+                xs = xyz[:,0]
+                ys = xyz[:,1]
+                zs = xyz[:,2]
+                #print(len(zs))
+                x = np.arange(len(xs))
+                x = x/fs-maxtime
+                line1.set_data(x,xs)
+                line2.set_data(x,ys)
+                line3.set_data(x,zs)
+                if adaptiveylim == True:
+                    ymax = np.max(np.nanmax(np.abs(xyz)))
+                else:
+                    ymax = amplim
+                ax1.set_ylim(-ymax,ymax)
+                ax2.set_ylim(-ymax,ymax)
+                ax3.set_ylim(-ymax,ymax)
+            except:
+                pass
+            return line1,line2,line3
+        else:
+            try:
+                zs = xyz[:,2]
+                x = np.arange(len(zs))
+                x = x/fs-maxtime
+                line1.set_data(x,zs)
+                if adaptiveylim == True:
+                    ymax = np.max(np.nanmax(np.abs(zs)))
+                else:
+                    ymax = amplim
+                ax1.set_ylim(-ymax,ymax)
+            except:
+                pass
+            return line1
     
     ani = FuncAnimation(fig,update_new,interval=10,blit=False)
     
